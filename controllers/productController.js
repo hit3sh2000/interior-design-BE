@@ -4,8 +4,6 @@ const User = mongoose.model('User');
 const Product = mongoose.model('Product');
 const Category = mongoose.model('Category');
 const bcrypt = require("bcrypt");
-const slugify = require("slugify");
-const shortid = require("shortid");
 const Helper = require('./Helper');
 
 module.exports = {
@@ -13,10 +11,14 @@ module.exports = {
         try {
             let { parentId, name, image } = req.body;
             let categoryData = {};
-            if (parentId) { categoryData['parentId'] = mongoose.Types.ObjectId(parentId); }
+            if (parentId) {
+                categoryData['parentId'] = mongoose.Types.ObjectId(parentId);
+            } else {
+                categoryData['isParent'] = true;
+            }
             if (name) { categoryData['name'] = name; }
             if (image) { categoryData['image'] = image; }
-            let category = new Category(categoryData).exec();
+            let category = new Category(categoryData);
             category.save()
                 .then(function (data) {
                     return res.send({
@@ -31,14 +33,14 @@ module.exports = {
             return next(error);
         }
     },
-    getCategories: (req, res) => {
+    getCategories: async (req, res) => {
         try {
-            let parentId = req.params.parentId;
+            let parentId = req.query.parentId;
             let findquery = {};
             if (parentId) {
                 findquery['parentId'] = mongoose.Types.ObjectId(parentId);
             } else {
-                findquery['parentId'] = null;
+                findquery['isParent'] = true;
             }
             let category = await Category.find(findquery).exec();
             return res.send({
@@ -54,7 +56,7 @@ module.exports = {
     createProduct: async (req, res, next) => {
         try {
             let requiredField = Helper.mandatoryField(req.body, [
-                'title', 'details', 'name', 'image', 'price', 'madeBy'
+                'title', 'productInfo', 'productDetails', 'name', 'image', 'price', 'madeBy'
             ]);
             if (requiredField.length > 0) {
                 return res.status(500).send({
@@ -64,12 +66,15 @@ module.exports = {
                     response: {},
                 });
             }
-            const { title, details, name, image, price, madeBy } = req.body;
+            const { title, productInfo, productDetails, name, categoryId, image, price, madeBy } = req.body;
             let data = {}
             data.title = title;
-            data.details = details;
+            data.productInfo = productInfo;
+            data.productDetails = productDetails;
             data.name = name;
-            data.categoryId = categoryId;
+            if (categoryId) {
+                data.categoryId = categoryId;
+            }
             data.image = image;
             data.price = price;
             data.madeBy = madeBy;
@@ -140,6 +145,14 @@ module.exports = {
             next();
         }
     },
+    getProductByCategory: async (req, res, next) => {
+        try {
+
+        } catch (error) {
+            console.log(error);
+            next();
+        }
+    }
     // createCategory: async (req, res, next) => {
     //     try {
 

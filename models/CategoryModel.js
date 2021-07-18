@@ -4,16 +4,14 @@ const categorySchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true,
     },
-    slug: {
+    image: {
       type: String,
-      required: true,
-      unique: true,
     },
-    parentId: {
-      type: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
-      default: null
+    parentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+    isParent: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }

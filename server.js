@@ -3,9 +3,10 @@ require('./models/db');                       //import MONGODB connction files
 const express = require('express');                      // import  express
 const cors = require('cors')
 
-const user = require('./routes/userRoute');    // import  userController                        
+const authRoute = require('./routes/authRoute');    // import  userController                        
+const productRoute = require('./routes/productRoute');    // import  userController                        
 const app = express()                                    //Asigning express    
-     
+
 app.use(cors());
 
 app.use(express.json({ limit: '50mb' }));
@@ -17,9 +18,9 @@ app.get('/', (req, res) => {
 
 
 //  setting router 
-app.use('/user',user);        
-
+app.use('/auth', authRoute);
+app.use('/product', productRoute);
 
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT,console.log(`Port is running on http://localhost:${PORT}`));
+app.listen(PORT, console.log(`Port is running on http://localhost:${PORT}`));

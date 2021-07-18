@@ -1,7 +1,5 @@
 const express = require('express'); //importing express
 var router = express.Router();
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
 const authController = require('../controllers/authController')
 
 router.route('/')
